@@ -26,9 +26,13 @@ Before describing the data set and its' variables, we will clean the data.
 
 ## Data Cleaning
 
-I have written a script to clean the data called `data_cleaning.R` which is in the `code` directory of this repository. The following code runs the script, and this script will read in the data (which is currently in the `data` directory as `validation_data_ready.csv`) as `unclean.data`, calculates scores for each scale based on the item scores, format the variables into the correct data types, and return the clean data as a data frame called `data`. The script uses the `groundhog` package to load the packages from a specific date—making the code reproducible in the future—so it may take a bit to fully run.
+I have written a script to clean the data called `data_cleaning.R` which is in the `code` directory of this repository. The following code runs the script, and this script will read in the data (which is currently in the `data` directory as `validation_data_ready.csv`) as `unclean.data`, reformats the variables into the correct data types, produces numerical item values for each scale, calculates scores for each scale, and returns the clean data as a data frame called `data`. The script uses the `groundhog` package [@simonsohn2024] to load the packages from a specific date—averting problems of package dependencies and making the code reproducible in the future—which may cause it to take longer than usual to run.
 
 ```{r}
 # Running the script to clean the data
 source(file = "./code/data_cleaning.R")
 ```
+
+The clean data is now a data frame object in the environment called `data`. I will now now describe the variables in the data frame.
+
+## 
