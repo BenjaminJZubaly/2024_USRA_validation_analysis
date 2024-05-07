@@ -15,23 +15,19 @@ csl: apa.csl
 bibliography: references.yaml
 ---
 
-## Quarto
+# Introduction
 
-Quarto enables you to weave together content and executable code into a finished document. To learn more about Quarto see <https://quarto.org>.
+The following tracks the data analysis for our preliminary study of the relationship between disgust and religiosity. This analysis will inform future studies on the basis for such a relationship. The goals of this analysis are as follows:
 
-## Running Code
+1.  Establish the reliability and validity of our religious behavioral intentions scales (see variables in the analysis below).
+2.  Estimate the relationship between disgust sensitivity and religiosity in a Christian sample.
 
-When you click the **Render** button a document will be generated that includes both content and the output of embedded code. You can embed code like this:
+Before describing the data set and its' variables, we will clean the data.
+
+## Data Cleaning
+
+I have written a script to clean the data called `data_cleaning.R` which is in the `code` directory of this repository. The following code runs the script, and this script will read in the data (which is currently in the `data` directory as `validation_data_ready.csv`) as `unclean.data`, calculates scores for each scale based on the item scores, format the variables into the correct data types, and return the clean data as a data frame called `data`.
 
 ```{r}
-1 + 1
+
 ```
-
-You can add options to executable code like this
-
-```{r}
-#| echo: false
-2 * 2
-```
-
-The `echo: false` option disables the printing of code (only output is displayed).
