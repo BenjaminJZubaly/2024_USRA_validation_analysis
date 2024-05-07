@@ -1,0 +1,6 @@
+# Data that hasn't been anonymized yet
+data/all_validation_data_unclean.csv
+
+# The Rproject files
+*.Rproj
+*.Rproj.user
