@@ -85,7 +85,9 @@ data.unclean <- data.unclean %>%
   mutate(date_end = parse_date_time(date_end, orders = c("ymd HMS", "mdy HM"), tz = "UTC")) %>%
   mutate(date_end = as.POSIXct(date_end, origin = "1970-01-01", tz = "UTC"))
 
-
+#Calculate time_taken from start date and end date
+data.unclean <- data.unclean %>%
+  mutate(time_taken = as.numeric(difftime(date_end, date_start, units = "mins")))
 
 
 
