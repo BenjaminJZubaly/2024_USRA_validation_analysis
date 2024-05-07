@@ -29,5 +29,6 @@ Before describing the data set and its' variables, we will clean the data.
 I have written a script to clean the data called `data_cleaning.R` which is in the `code` directory of this repository. The following code runs the script, and this script will read in the data (which is currently in the `data` directory as `validation_data_ready.csv`) as `unclean.data`, calculates scores for each scale based on the item scores, format the variables into the correct data types, and return the clean data as a data frame called `data`.
 
 ```{r}
-
+# Running the script to clean the data
+source(file = "./code/data_cleaning.R")
 ```
