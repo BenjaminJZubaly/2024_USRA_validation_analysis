@@ -4,3 +4,9 @@ data/all_validation_data_unclean.csv
 # The Rproject files
 *.Rproj
 *.Rproj.user
+.Rproj.user
+
+.Rhistory
+apa.csl
+references.yaml
+
