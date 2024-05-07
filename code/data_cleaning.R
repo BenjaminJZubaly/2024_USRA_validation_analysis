@@ -70,5 +70,28 @@ data.unclean$christian_affiliation <- factor(data.unclean$christian_affiliation,
                                                         "Non-denominational", 
                                                         "Other"))
 
+
 # Drop data_retention_consent
 data.unclean <- data.unclean %>% select(-data_retention_consent)
+
+# Standardize dates
+  # Apply parsing and conversion directly using the mutate function for both start date and end date
+    # Start date
+data.unclean <- data.unclean %>%
+  mutate(date_start = parse_date_time(date_start, orders = c("ymd HMS", "mdy HM"), tz = "UTC")) %>%
+  mutate(date_start = as.POSIXct(date_start, origin = "1970-01-01", tz = "UTC"))
+    # End date
+data.unclean <- data.unclean %>%
+  mutate(date_end = parse_date_time(date_end, orders = c("ymd HMS", "mdy HM"), tz = "UTC")) %>%
+  mutate(date_end = as.POSIXct(date_end, origin = "1970-01-01", tz = "UTC"))
+
+
+
+
+
+
+
+
+
+
+

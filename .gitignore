@@ -6,7 +6,11 @@ data/all_validation_data_unclean.csv
 *.Rproj.user
 .Rproj.user
 
+# Other R files
+.Rdata
 .Rhistory
+
+# References files
 apa.csl
 references.yaml
 
