@@ -614,3 +614,42 @@ IIGE_new_histogram <- ggplot(data, aes(x = RBI.IIGE)) +
 
 print(IIGE_new_histogram)
 ```
+
+### Validity
+
+To establish the concurrent validity of the RBI scales, we will run bivariate correlations with theoretically relevant variables.
+
+1.  Religiosity aspects of the RBI subscales
+
+Our scales should both be positively related to a measure that is sensitive to one's degree of religiosity. Thus, to establish the validity of the religiosity aspect of our `RBI.DOGS` and `RBI.IIGE` scales, we will run bivariate correlations with the `PIOS` and its' subscales. This will also allow us to assess the relationship between the two RBI subscales.
+
+```{r}
+# Creating a data frame with only the RBI subscales and the PIOS and its' subscales
+rel.val.data <- select(data, RBI.DOGS, RBI.IIGE, PIOS:FOS)
+
+# Creating the correlation matrix
+rel.val.cor <- corr.test(rel.val.data)
+
+# Display the results
+print(rel.val.cor)
+```
+
+-   RBI Scales Correlation with Eachother:
+
+    -   The correlation between the DOGS and IIGE is a strong positive correlation (*r* = .62, *p* \< .01).
+
+-   The RBI Scales and the PIOS:
+
+    -   The DOGS has a small, positive correlation with the PIOS (*r* = .19, *p* = .03).
+
+        -   The relationship between DOGS and the PIOS is mostly due to its relationship with the FOS subscale (*r* = .21, *p* = .02), and the DOGS is not significantly correlated with the FOG subscale (*r* = .09, *p* = .29).
+
+    -   The IIGE has a moderate, positive correlation with the PIOS (*r* = .39, *p* \< .01).
+
+        -   The relationship between the IIGE and the FOS subscale (*r* = .40, *p* \< .01) is slightly stronger than the relationship between the IIGE and the FOG subscale (*r* = .32, *p* \< .01).
+
+The relationships here provide partial support for the validity of the RBI subscales. First, the strong positive relationship between the subscales permits the interpretation that their shared religious nature may underly this covariance. Second, the RBI subscales are both significantly correlated with the full PIOS scale. Third, however, the relationships between the RBI subscales—particularly for the DOGS—and the full PIOS scale are small to medium sized relationships, and stronger relationships would provide greater evidence for the validity of the religious aspects of the RBI subscales.
+
+As an additional note, the relationships are stronger between the RBI subscales and the FOS subscale of the PIOS, and the relationship between the DOGS and the FOS subscale is very small and not statistically reliable. It is not clear to me why these relationships should be stronger for fear of sin.
+
+2.  In-group and out-group attitudes aspects of the
