@@ -245,7 +245,21 @@ To get a sense of the data, we will first generate descriptive statistics and vi
 
 ### Descriptive Statistics
 
-First, we will describe the sample in terms of the categorical variables. The following generates frequency tables for all categorical variables.
+First, we will see how long it took participants to complete the survey.
+
+```{r, label-Time Taken}
+# Saving the descriptive stats for time_taken
+time_taken_descriptives <- describe(data$time_taken)
+
+# Displaying the results
+print(time_taken_descriptives)
+```
+
+-   The average time it took participants to complete the survey was 13.37 minutes, with a standard deviation of 30.56 minutes. Because this standard deviation is so large, the maximum value (330 minutes) is so large, and the skew is quite large (8.7), there must be an outlier influencing these statistics.
+
+    -   Indeed, if we look at the trimmed mean (under "trimmed")—which cuts off the outer 10th percentile of scores—the mean falls to 8.48.
+
+Next, we will describe the sample in terms of the categorical variables. The following generates frequency tables for all categorical variables.
 
 ```{r, label-Frequency Tables for Categorical Variables}
 # Create list of whether a variable is a factor variable or not
@@ -336,3 +350,195 @@ In total, there are *N* = 134 participants in the data frame.
     -   Male: *n* = 51
 
     -   Non-binary: *n* = 1
+
+Now, we will investigate the numerical variables. The following generates descriptive statistics using the `psych` package for all numeric variables (except for `time_taken`).
+
+```{r}
+# Saving a vector with the names of all numeric variables
+num_vars <- data[c("RBI.DOGS", "RBI.IIGE", "RBI.F", "MD", "PD", 
+                        "PIOS", "FOG", "FOS", "SD_athiest", "SD_christian", 
+                        "SD_sikh", "SD_muslim", "SD_buddhist", "SD_hindu", 
+                        "SD_jewish", "SD_protestant", "SD_catholic", "age")]
+
+# Saving the descriptivev statistics for num_vars
+num_vars_descriptives <- describe(num_vars)
+
+# Displaying the results
+print(num_vars_descriptives)
+```
+
+-   I will not describe all of the variables here, except for a few notable cases.
+
+    -   Age: The average age reflects the fact that we excluded those under 18 and partially recruited those in university (*M* = 21.87, *SD* = 3.53).
+
+    -   Social Distance: As should also be expected, social distance scores are lowest for Christians (*M* = 35, *SD* = 20.30), followed by Catholics (*M* = 37.15, *SD* = 16.82) and Protestants (*M* = 38.54). The rest of the religious groups have higher social distance scores (44.02 ≤ *M* ≥ 40.67), with Jewish as the next lowest social distance and Sikh with the highest social distance.
+
+### Data Visualization
+
+Now we will produce some bar charts and histograms to assess the distributions of these variables visually.
+
+First, we will produce bar charts for each categorical variable.
+
+```{r}
+# Creating a data frame with only categorical variables based on the logical vector generated above
+categorical_data <- data[, factor_variables]
+
+# Initialize a list to store the plots in
+bar_chart_list <- list()
+
+# Loop through each categorical variable in the data frame and create a bar chart
+for (var in names(categorical_data)) {
+  p <- ggplot(categorical_data, aes(x = !!sym(var))) + 
+    geom_bar() +
+    theme_minimal() +
+    labs(title = paste("Bar Chart of", var), x = var, y = "Count")
+  
+  # Save each chart in the list with the variable name as the identifier
+  bar_chart_list[[var]] <- p
+}
+
+# Display each chart
+print(bar_chart_list)
+```
+
+Next, we will produce a histogram for `time_taken`.
+
+```{r}
+# Initialize a list to store the histograms in
+histogram_list <- list()
+
+# Loop through each variable in num_vars to produce a histogram
+for (var in names(num_vars)) {
+  p <- ggplot(num_vars, aes(x = .data[[var]])) + 
+    geom_histogram(bins = 25, fill = "steelblue", color = "black") +
+    theme_minimal() +
+    labs(title = paste("Histogram of", var), x = var, y = "Frequency")
+
+  # Save each histogram in the list with the variable name as the identifier
+  histogram_list[[var]] <- p
+}
+
+# Display the histograms
+print(histogram_list)
+```
+
+-   Many of the variables here are not normally distributed.
+
+    -   Age:
+
+        -   Age seems to be negatively skewed due to our selection of only adults.
+
+    -   Religious Behavioral Intentions:
+
+        -   The full religious behavioral intentions scale seems to be approximately normally distributed.
+
+            -   However, the decrease out-group seperation scale has some strange perturbations, such that scores jump in frequency around 4 and decrease towards five, before spiking just above five and then continuing to decrease.
+
+            -   Then, the increase in-group embeddedness scores seem to be cut off by the range of the scale. The frequency of scores tend to increase relatively steadily until their highest, which is 7. This may reflect that we simply did not provide enough range for genuine variability on the questionnaire, or it may reflect socially desirable responding.
+
+    -   Disgust:
+
+        -   Moral disgust is approximately normally distributed, but there are some outliers at the low end of the scale. I originally noticed the 0 response in this scale while cleaning the raw data, and that participant filled out the rest of the survey without straightlining zeros, so I think their responses are genuine.
+
+        -   Pathogen disgust shows a pretty nice normal distribution, although there may be some positive skew.
+
+    -   PIOS:
+
+        -   The Penn Inventory of Scrupulosity almost looks to be distributed normally, but there is a spike in scores just before 40.
+
+            -   The Fear of God subscale may be negatively skewed.
+
+            -   The Fear of Sin subscale is pretty nicely distributed.
+
+    -   Social Distance:
+
+        -   The Social Distance scores are not normally distributed. Most scores for all religions are clumped towards the beginning of the scale, particularly for those with lower social distance scores in general (e.g., Christians). For the rest, they are still aggregated mostly at the lower range of the scale, but there are spurts of scores higher that pull the mean higher.
+
+## Psychometric Properties of Religious Behavioral Intentions Scales
+
+To establish the psychometric properties of our religious behavioral intentions subscales, we will first do an internal consistency analysis to establish reliability, then we will look for correlations with the other theoretically relevant variables to try to establish validity.
+
+### Reliability
+
+To establish internal consistency, we will analyze Chronbach's alpha scores for the subscales. We will also calculate the alpha scores if items are dropped, to assess whether items are not contributing to the internal consistency of the scales and remove them as appropriate.
+
+1.  Religious Behavioral Intentions to Decrease Out-Group Seperation:
+
+```{r}
+# Creating a data frame with only the DOGS items
+DOGS_items <- select(data, DOGS.1:DOGS.6)
+
+# Calculating Chronbach's alpha
+Chronbach_DOGS <- alpha(DOGS_items)
+
+# Displaying the results
+print(Chronbach_DOGS$total)
+print(Chronbach_DOGS$alpha.drop)
+```
+
+-   The raw (α = .22) and standardized (α = .30) alpha scores are quite low for all of the items together, and items 5 and 6 are both negatively correlated with the first principal component of the items.
+
+    -   Item 5: Date a non-Christian
+
+    -   Item 6: Have close platonic relationships with non-Christians
+
+-   Looking at the alpha scores if items are dropped, when item 5 (`DOGS.5`) is excluded the raw (α = .58) and standardized (α = .55) alpha scores substantially increase. So we will remove that item and re-run the analysis.
+
+```{r}
+# Re-running the analysis with only items 1-4 and 6
+Chronbach_DOGS_2 <- alpha(DOGS_items[, c(1:4, 6)])
+
+# Displaying the results
+print(Chronbach_DOGS_2$total)
+print(Chronbach_DOGS_2$alpha.drop)
+```
+
+-   After re-running the analysis, the sixth item is still negatively correlated with the first principal component of the items, and the `alpha.drop` statistics indicate that removing this item from the scale improves the internal consistency of the scale to α = .74 (standardized α = .73).
+
+-   Therefore, we will remove this item and run the analysis again.
+
+```{r}
+# Re-running the analysis with only items 1-4
+Chronbach_DOGS_3 <- alpha(DOGS_items[, c(1:4)])
+
+# Displaying the results
+print(Chronbach_DOGS_3$total)
+print(Chronbach_DOGS_3$alpha.drop)
+```
+
+-   The new alpha statistic for the scale is now .74 (standardized α = .73), and there are no items for which their removal increases the reliability of the scale.
+
+To update the total scores in the clean data, we will first assign the old `RBI.DOGS` variable to a new variable called `DOGS_original` and recalculate the `RBI.DOGS` scores for participants with only the first four items.
+
+```{r}
+# Creating the DOGS_original variable
+data$DOGS_original <- data$RBI.DOGS
+
+# Recalculating the RBI.DOGS
+data <- data %>%
+  rowwise() %>%
+  mutate(
+    RBI.DOGS = mean(c_across(DOGS.1:DOGS.4), na.rm = FALSE),  # Mean for DOGS items
+  ) %>%
+  ungroup()
+```
+
+We will now recalculate descriptive statistics and display the histogram for the `RBI.DOGS` variable.
+
+```{r}
+# Generating descriptive statistics for RBI.DOGS
+RBI.DOGS_descriptives <- describe(data$RBI.DOGS)
+
+# Display the results
+print(RBI.DOGS_descriptives)
+
+# Generating the histogram for RBI.DOGS
+DOGS_new_histogram <- ggplot(data, aes(x = RBI.DOGS)) + 
+  geom_histogram(bins = 25, fill = "steelblue", color = "black") +
+  theme_minimal() +
+  labs(title = "Histogram of RBI.DOGS", x = "RBI.DOGS", y = "Frequency")
+
+print(DOGS_new_histogram)
+```
+
+2.  Religious Behavioral Intentions to Increase In-Group Embeddedness
