@@ -185,41 +185,11 @@ The clean data is now a data frame object in the environment called `data`.
 
         -   This is also measured with Likert-style response options, and it was scored by summing the items in total and within their subscales.
 
-> PIOS-R:
-> 1.	I worry that I might have dishonest thoughts
-> 2.	I fear I will act immorally
-> 3.	I feel urges to confess sins over and over again
-> 4.	I worry about heaven and hell
-> 5.	Feeling guilty interferes with my ability to enjoy things I would like to enjoy
-> 6.	Immoral thoughts come into my head and I cannot get rid of them
-> 7. 	I am afraid my behaviour is unacceptable to God
-> 8.	I must try hard to avoid having certain immoral thoughts
-> 9.	I am very worried that things I did may have been dishonest
-> 10.	I am afraid I will disobey God’s rules/laws
-> 11.	I am afraid of having sexual thoughts
-> 12.	I feel guilty about immoral thoughts I have had
-> 13.	I worry that God is upset with me
-> 14.	I am afraid of having immoral thoughts
-> 15.	I am afraid my thoughts are unacceptable to God
+> PIOS-R: 1. I worry that I might have dishonest thoughts 2. I fear I will act immorally 3. I feel urges to confess sins over and over again 4. I worry about heaven and hell 5. Feeling guilty interferes with my ability to enjoy things I would like to enjoy 6. Immoral thoughts come into my head and I cannot get rid of them 7. I am afraid my behaviour is unacceptable to God 8. I must try hard to avoid having certain immoral thoughts 9. I am very worried that things I did may have been dishonest 10. I am afraid I will disobey God’s rules/laws 11. I am afraid of having sexual thoughts 12. I feel guilty about immoral thoughts I have had 13. I worry that God is upset with me 14. I am afraid of having immoral thoughts 15. I am afraid my thoughts are unacceptable to God
 >
-> Fear of Sin:
-> 1.	I worry that I might have dishonest thoughts
-> 2.	I fear I will act immorally
-> 3.	I feel urges to confess sins over and over again
-> 5.	Feeling guilty interferes with my ability to enjoy things I would like to enjoy
-> 6.	Immoral thoughts come into my head and I cannot get rid of them
-> 8.	I must try hard to avoid having certain immoral thoughts
-> 9.	I am very worried that things I did may have been dishonest
-> 11.	I am afraid of having sexual thoughts
-> 12.	I feel guilty about immoral thoughts I have had
-> 14.	I am afraid of having immoral thoughts
+> Fear of Sin: 1. I worry that I might have dishonest thoughts 2. I fear I will act immorally 3. I feel urges to confess sins over and over again 5. Feeling guilty interferes with my ability to enjoy things I would like to enjoy 6. Immoral thoughts come into my head and I cannot get rid of them 8. I must try hard to avoid having certain immoral thoughts 9. I am very worried that things I did may have been dishonest 11. I am afraid of having sexual thoughts 12. I feel guilty about immoral thoughts I have had 14. I am afraid of having immoral thoughts
 >
-> Fear of God:
-> 4.	I worry about heaven and hell
-> 7. 	I am afraid my behaviour is unacceptable to God
-> 10.	I am afraid I will disobey God’s rules/laws
-> 13.	I worry that God is upset with me
-> 15.	I am afraid my thoughts are unacceptable to God
+> Fear of God: 4. I worry about heaven and hell 7. I am afraid my behaviour is unacceptable to God 10. I am afraid I will disobey God’s rules/laws 13. I worry that God is upset with me 15. I am afraid my thoughts are unacceptable to God
 
 -   Religious Social Distance Questionnaire:
 
@@ -256,3 +226,113 @@ The clean data is now a data frame object in the environment called `data`.
     -   The variables in the data frame are denoted by `SD_religiousgroup`, where "religiousgroup" has the name of the group (e.g., `SD_protestant`).
 
 ![](images/clipboard-370321347.png)
+
+# Analysis
+
+Before moving on to the analysis, we will load the necessary packages.
+
+```{r, label-Install Packages}
+# Defining the list of packages to install in a vector
+pkg <- c("psych")
+
+# Loading the packages using groundhog
+suppressMessages(groundhog.library(pkg, date = "2024-04-22")) # Suppress message to allow for rendering of document
+```
+
+## Data Exploration
+
+To get a sense of the data, we will first generate descriptive statistics and visualize the distribution of the variables.
+
+### Descriptive Statistics
+
+First, we will describe the sample in terms of the categorical variables. The following generates frequency tables for all categorical variables.
+
+```{r, label-Frequency Tables for Categorical Variables}
+# Create list of whether a variable is a factor variable or not
+factor_variables <- sapply(data, is.factor)
+
+# Create a frequency table for each factor variable
+factor_tables <- lapply(data[factor_variables], table)
+
+# Display the number of participants in the data frame
+nrow(data)
+
+# Display the tables
+print(factor_tables)
+```
+
+In total, there are *N* = 134 participants in the data frame.
+
+-   Recruitment Method: The primary sources of recruitment are SONA and Prolific, followed by Social Media and Word of Mouth.
+
+    -   SONA: *n* = 52
+
+    -   Prolific: *n* = 49
+
+    -   Social media: *n* = 28
+
+        -   Social Media Platform: Of those recruited through social media, most came from Instagram, followed by Facebook and other.
+
+            -   Instagram: 19
+
+            -   Facebook: 7
+
+            -   Other: 2
+
+    -   Word of Mouth: *n* = 5
+
+-   Education: We required that participants either be in some sort of college/university/technical school or were graduated from such an institution. This is reflected in our education demographics below, providing us with a highly educated sample.
+
+    -   Completed Education Level:
+
+        -   Secondary education (e.g. GED/GCSE): *n* = 5
+
+        -   High school diploma/A-levels: *n* = 77
+
+        -   Technical/community college: *n* = 13
+
+        -   Undergraduate degree (BA/BSc/other): *n* = 35
+
+        -   Graduate degree (MA/MSc/MPhil/other): *n* = 4
+
+    -   Education Level Currently In:
+
+        -   Technical/community college: *n* = 9
+
+        -   Undergraduate degree (BA/BSc/other): *n* = 98
+
+        -   Graduate degree (MA/MSc/MPhil/other): *n* = 25
+
+        -   Doctorate degree (PhD/other): *n* = 2
+
+-   Religious Affiliation: Because we selected only Christians, religious identification is all "Christianity (e.g. Baptist, Church of England, Roman Catholic, Methodist, Jehovah's Witness, etc.)" (*N* = 134).
+
+-   Christian Affiliation: Although the modal response is non-denominational for Christian affiliation, there is representation from many different Christian sects in our sample.
+
+    -   Non-denominational: *n* = 48
+
+    -   Catholic Anglican / Episcopalian: *n* = 21
+
+    -   Protestant: *n* = 19
+
+    -   Baptist: *n* = 13
+
+    -   Pentecostal / Apostolic: *n* = 12
+
+    -   Orthodox / Eastern Orthodox: *n* = 7
+
+    -   Calvinist / Reformed / Presbyterian: *n* = 4
+
+    -   Lutheran: *n* = 3
+
+    -   Methodist: *n* = 2
+
+    -   Other: *n* = 4
+
+-   Gender: As is typical of university samples (which our sample in large part is) gender is skewed female.
+
+    -   Female: *n* = 81
+
+    -   Male: *n* = 51
+
+    -   Non-binary: *n* = 1
