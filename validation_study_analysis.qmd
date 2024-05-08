@@ -542,3 +542,75 @@ print(DOGS_new_histogram)
 ```
 
 2.  Religious Behavioral Intentions to Increase In-Group Embeddedness
+
+```{r}
+# Creating a data frame with only the IIGE items
+IIGE_items <- select(data, IIGE.1:IIGE.7)
+
+# Calculating Chronbach's alpha
+Chronbach_IIGE <- alpha(IIGE_items)
+
+# Displaying the results
+print(Chronbach_IIGE$total)
+print(Chronbach_IIGE$alpha.drop)
+```
+
+-   The original alpha value (α = .83) and standardized alpha value (α = .81) are already relatively strong for the IIGE scale.
+
+-   Two items, however, are contributing less well to the internal consistency than the others, and removing them from the scale indicates that the internal consistency will not decrease substantially. They are item 4 and item 7.
+
+    -   Item 4: Be involved in a committed relationship with another Christian
+
+    -   Item 7: Be involved in a close platonic relationship with other Christians
+
+-   These items are thematically very similar to the two items removed from our Decrease Out-Group Separation scale. That is, they represent behaviors that have to do with personal relationships, whereas the rest of the items do not. This indicates to me that the items are affected by factors to do with personal relationships rather than the individual’s relationship to the group, which is what we are trying to get at most particularly here. Removing these items from the scale would allow it to mirror the Decrease Out-Group Separation scale better. In addition, these items are very similar to some of the items in the Social Distance questionnaire, which we will use to validate the RBI subscales later. If this is the case, correlations between the RBI subscales and the Social Distance scores may not accurately represent concurrent validity, because some of the items are essentially the same. Therefore, I am going to remove items 4 and 7 from the scale and re-run the analysis.
+
+```{r}
+# Re-running the analysis with only items 1-3 and 5-6
+Chronbach_IIGE_2 <- alpha(IIGE_items[, c(1:3, 5:6)])
+
+# Displaying the results
+print(Chronbach_IIGE_2$total)
+print(Chronbach_IIGE_2$alpha.drop)
+```
+
+-   Removal of items 4 and 7 increased the alpha value for the scale to α = .86 (standardized α = .86).
+
+-   While the `alpha.drop` statistics indicate that the internal consistency can be slightly increased by removing item 5, I believe that this item has strong face validity as a religious behavior that could function to increase in-group embeddedness. Therefore, I will leave it in.
+
+    -   Item 5: Be baptized
+
+To update the total scores in the clean data, we will first assign the old `RBI.IIGE` variable to a new variable called `IIGE_original` and recalculate the `RBI.IIGE` scores for participants with only items 1, 2, 3, 5, and 6. We will also update the `RBI.F` variable.
+
+```{r}
+# Creating the IIGE_original and RBI.F_original variable
+data$IIGE_original <- data$RBI.IIGE
+RBI.F_original <- data$RBI.F
+
+# Calculating new total variables
+data <- data %>%
+  rowwise() %>%
+  mutate(
+    RBI.IIGE = mean(c_across(c(IIGE.1, IIGE.2, IIGE.3, IIGE.5, IIGE.6)), na.rm = FALSE),
+    RBI.F = mean(c_across(c(DOGS.1, DOGS.2, DOGS.3, DOGS.4, IIGE.1, IIGE.2, IIGE.3, IIGE.5, IIGE.6)), na.rm = FALSE)
+  ) %>%
+  ungroup()
+```
+
+Now we will recalculate descriptive statistics and the histogram for the `RBI.IIGE` variable.
+
+```{r}
+# Generating descriptive statistics for RBI.IIGE
+RBI.IIGE_descriptives <- describe(data$RBI.IIGE)
+
+# Display the results
+print(RBI.IIGE_descriptives)
+
+# Generating the histogram for RBI.DOGS
+IIGE_new_histogram <- ggplot(data, aes(x = RBI.IIGE)) + 
+  geom_histogram(bins = 25, fill = "steelblue", color = "black") +
+  theme_minimal() +
+  labs(title = "Histogram of RBI.IIGE", x = "RBI.DOGS", y = "Frequency")
+
+print(IIGE_new_histogram)
+```
