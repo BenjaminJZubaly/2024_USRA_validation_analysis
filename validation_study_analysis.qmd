@@ -17,10 +17,16 @@ bibliography: references.yaml
 
 # Introduction
 
-The following tracks the data analysis for our preliminary study of the relationship between disgust and religiosity. This analysis will inform future studies on the basis for such a relationship. The goals of this analysis are as follows:
+In recent decades there has been substantial interest by evolutionary scientists in the role of the behavioral immune system in regulating complex social behavior. @fincher2012 proposed the hypothesis that religiosity should function to protect against parasites through (1) maintaining out-group separation and (2) maintaining in-group embeddedness. If this hypothesis is correct, religious behaviors belonging to these categories should be motivated by parasite disgust. The following analysis is an attempt to answer the question: does parasite disgust sensitivity influence religious behaviours that may function to protect against infectious disease? This analysis will inform future studies on the basis for the relationship between disgust and religiosity. The goals of this analysis are as follows:
 
-1.  Establish the reliability and validity of our religious behavioral intentions scales (see variables in the analysis below).
-2.  Estimate the relationship between disgust sensitivity and religiosity in a Christian sample.
+1.  Establish the reliability and validity of our religious behavioral intentions scales (see [Variables in the Analysis] below).
+2.  Test the following hypotheses:
+
+> Hypothesis 1: Religious individuals scoring higher in pathogen disgust sensitivity will report being more likely to engage in religious behaviors that increase in-group embeddedness.
+>
+> Hypothesis 2: Religious individuals scoring higher in pathogen disgust sensitivity will report being less likely to engage in religious behaviors that decrease out-group separation.
+
+3.  Estimate the relationship between disgust sensitivity and religiosity in a Christian sample.
 
 Before describing the data set and its' variables, we will clean the data.
 
@@ -28,11 +34,225 @@ Before describing the data set and its' variables, we will clean the data.
 
 I have written a script to clean the data called `data_cleaning.R` which is in the `code` directory of this repository. The following code runs the script, and this script will read in the data (which is currently in the `data` directory as `validation_data_ready.csv`) as `unclean.data`, reformats the variables into the correct data types, produces numerical item values for each scale, calculates scores for each scale, and returns the clean data as a data frame called `data`. The script uses the `groundhog` package [@simonsohn2024] to load the packages from a specific date—averting problems of package dependencies and making the code reproducible in the future—which may cause it to take longer than usual to run.
 
-```{r}
+```{r, label-Data Cleaning}
 # Running the script to clean the data
 source(file = "./code/data_cleaning.R")
+
+# Writing the new data frame to the data folder as validation_data_clean.csv
+write.csv(data, file = "./data/validation_data_clean.csv", row.names = FALSE)
 ```
 
-The clean data is now a data frame object in the environment called `data`. I will now now describe the variables in the data frame.
+The clean data is now a data frame object in the environment called `data`.
 
-## 
+## Variables in the Analysis
+
+**Data Frame:** `Data`
+
+**Variables:**
+
+-   Demographic Variables:
+
+    -   `id`: A randomly generated ID to track participants.
+
+    -   `date_start`: The date when participants started the survey in the format of "YYYY-MM-DD HH-MM-SS".
+
+    -   `date_end`: The date when participants finished the survey in the format of "YYYY-MM-DD HH-MM-SS".
+
+    -   `time_taken`: The amount of time it took to complete the survey (`date_end` - `data_start`) in minutes.
+
+    -   `rec_meth`: The method of recruitment. This is a factor variable with four levels: "Prolific", "Social Media", "SONA", and "Word of Mouth".
+
+    -   `social_media_platform`: For social media recruits, the platform from which they were recruited. This is a factor variable with three levels: "Facebook", "Instagram", and "Other".
+
+    -   `educ_complete`: The highest level of education completed. This is a factor variable with five levels: "Graduate degree (MA/MSc/MPhil/other)", "High school diploma/A-levels", "Secondary education (e.g. GED/GCSE)", "Technical/community college", and "Undergraduate degree (BA/BSc/other)".
+
+    -   `educ_currently_in`: The level of education currently engaged in, if applicable. This is a factor variable with four levels: "Doctorate degree (PhD/other)", "Graduate degree (MA/MSc/MPhil/other)", "Technical/community college", and "Undergraduate degree (BA/BSc/other)".
+
+    -   `age`: Age in years.
+
+    -   `gender`: Participants open-ended gender response. This is a factor variable and through investigating the reported categories, I decided to coerce responses into three categories: "Female", "Male", and "Non-binary". The only response that did not match these words was one response of "man", which was categorized as "Male".
+
+    -   `religious_affiliation`: Religious affiliation. This is a factor variable, and because we only selected Christian participants there is only one level: "Christianity (e.g. Baptist, Church of England, Roman Catholic, Methodist, Jehovah's Witness, etc.)".
+
+    -   `christian_affiliation`: Christian branch or denomination affiliation. This is a factor variable with 10 levels: "Catholic Anglican / Episcopalian", "Protestant", "Pentecostal / Apostolic", "Methodist", "Lutheran", "Orthodox / Eastern Orthodox", "Baptist", "Calvinist / Reformed / Presbyterian", "Non-denominational", and "Other".
+
+-   Religious Behavioral Intentions measures:
+
+    -   The items of this questionnaire were conceptualized by our group in PSYC 322, and they are written to represent the two categories of religious behaviour emphasized in @fincher2012. That is, they are meant to represent religious behaviour that function to (1) increase out-group separation and (2) increase in-group embeddedness.
+
+        -   Because we found it difficult to come up with religious behaviors that we thought would function to increase out-group seperation and would not be seen as immoral (and therefore create demand characteristics), we decided to go the opposite direction; the first subscale of the questionnaire is therefore made up of behaviors that function to *decrease* out-group separation, and we expect that this correlates negatively with parasite disgust sensitivity. For behaviors that function to increase in-group embeddedness, we tried to get at these behaviors directly. Thus, the second subscale is made up of behaviors that should function to *increase* in-group embeddedness.
+
+        -   Each of these behaviors had their own 7-point Likert-style response option that represents the likelihood of the person to engage in this behaviour (1=very unlikely, 2=unlikely, 3=slightly unlikely, 4=neither likely nor unlikely, 5=somewhat likely, 6=likely, 7=very likely). Therefore, this questionnaire is intended to measure our participants’ religious behavioral intentions. Item scores were summed to provide a full score (`RBI.F`), a score for the decrease out-group seperation subscale (`RBI.DOGS`), and a score for the increase in-group embeddedness subscale (`RBI.IIGE`).
+
+    -   The full scale is displayed below:
+
+> *\[Instructions:\]* Please indicate the degree to which, as a Christian, you are likely to engage in the following behaviour by selecting the bubble of your choice.
+>
+> *\[Decrease out-group separation:\]*
+>
+> 1.  Participate in outreach or missionary action towards non-Christians in your local area if you had the chance
+> 2.  Participate in missionary action towards non-Christians in another country if you had the chance
+> 3.  Attend a different church than your "home church" one time during a year
+> 4.  Attend a different small group than your “home group” one time during a year
+> 5.  Date a non-Christian
+> 6.  Have close platonic relationships with non-Christians
+>
+> *\[Increase in-group embeddedness:\]*
+>
+> 1.  Regularly participate in large religious gatherings (e.g., chapel, church, etc.)
+> 2.  Regularly participate in small-group religious activities (e.g., bible study, youth group, devotionals, etc.)
+> 3.  Volunteer at a church (e.g., childcare, youth, worship, kitchen, etc.)
+> 4.  Be involved in a committed relationship with another Christian
+> 5.  Be baptized
+> 6.  Partake in tithing/offering
+> 7.  Be involved in a close platonic relationship with other Christians
+
+-   The Three Domains of Disgust Scale (TDDS) [@olatunji2012, @tybur2009]
+
+    -   The Three Domains of Disgust Scale was developed by @tybur2009 in order to measure three relatively distinct domains of disgust based on evolutionary logic. These forms have their own subscales, sexual disgust, moral disgust (`MD`) and pathogen disgust (`PD`). It’s three factor structure has been validated in a three-factor confirmatory factor analysis, which was favored over a single factor structure [@olatunji2012]. In order to ensure that participants are only exposed to a subminimal level of risk of discomfort—and because it was not directly relevant to our hypotheses at the time—we did not administer the sexual disgust subscale.
+
+    -   Participants were asked to rate the degree to which they feel each item is disgusting on 7-point, Likert-style response options (0=not disgusting at all, 6=extremely disgusting). The items were summed to provide a total score for each subscale. The items are as follows.
+
+> **Items in Order:**
+>
+> 1\. Shoplifting a candy bar from a convenience store
+>
+> 2\. Stepping on dog poop
+>
+> 3\. Stealing from a neighbor
+>
+> 4\. Sitting next to someone who has red sores on their arm
+>
+> 5\. A student cheating to get good grades
+>
+> 6\. Shaking hands with a stranger who has sweaty palms
+>
+> 7\. Deceiving a friend
+>
+> 8\. Seeing some mold on old leftovers in your refrigerator
+>
+> 9\. Forging someone’s signature on a legal document
+>
+> 10\. Standing close to a person who has body odor
+>
+> 11\. Cutting to the front of a line to purchase the last few tickets to a show
+>
+> 12\. Seeing a cockroach run across the floor
+>
+> 13\. Intentionally lying during a business transaction
+>
+> 14\. Accidentally touching a person’s bloody cut
+>
+> **Items within their Subscales:**
+>
+> *Moral Disgust:*
+>
+> 4\. Stealing from a neighbor
+>
+> 19\. Intentionally lying during a business transaction
+>
+> 13\. Forging someone’s signature on a legal document
+>
+> 10\. Deceiving a friend
+>
+> 7\. A student cheating to get good grades
+>
+> 1\. Shoplifting a candy bar from a convenience store
+>
+> 16\. Cutting to the front of a line to purchase the last few tickets to a show
+>
+> *Pathogen Disgust:*
+>
+> 12\. Seeing some mold on old leftovers in your refrigerator
+>
+> 15\. Standing close to a person who has body odor
+>
+> 9\. Shaking hands with a stranger who has sweaty palms
+>
+> 3\. Stepping on dog poop
+>
+> 21\. Accidentally touching a person’s bloody cut
+>
+> 18\. Seeing a cockroach run across the floor
+>
+> 6\. Sitting next to someone who has red sores on their arm
+
+-   The Penn Inventory of Scrupulosity Revised (PIOS-R) [@abramowitz2002; @olatunji2007]
+
+    -   The Penn Inventory of Scrupulosity (PIOS) measures religious elements of scrupulosity, including its two domains fear of Sin and fear of God, and was developed by @abramowitz2002 to assess these elements of pathological over-scrupulosity for subclinical levels of OCD symptamotology. It was further developed by @olatunji2007, who used item and factor analysis to validate a new, 15-item Penn Inventory of Scrupulosity Revised (PIOS-R).
+
+        -   In our data frame, these variables are the Penn Inventory of Scrupulosity Revised (`PIOS`), the Fear of God subscale (`FOG`), and the Fear of Sin subscale (`FOS`).
+
+        -   This is also measured with Likert-style response options, and it was scored by summing the items in total and within their subscales.
+
+> PIOS-R:
+> 1.	I worry that I might have dishonest thoughts
+> 2.	I fear I will act immorally
+> 3.	I feel urges to confess sins over and over again
+> 4.	I worry about heaven and hell
+> 5.	Feeling guilty interferes with my ability to enjoy things I would like to enjoy
+> 6.	Immoral thoughts come into my head and I cannot get rid of them
+> 7. 	I am afraid my behaviour is unacceptable to God
+> 8.	I must try hard to avoid having certain immoral thoughts
+> 9.	I am very worried that things I did may have been dishonest
+> 10.	I am afraid I will disobey God’s rules/laws
+> 11.	I am afraid of having sexual thoughts
+> 12.	I feel guilty about immoral thoughts I have had
+> 13.	I worry that God is upset with me
+> 14.	I am afraid of having immoral thoughts
+> 15.	I am afraid my thoughts are unacceptable to God
+>
+> Fear of Sin:
+> 1.	I worry that I might have dishonest thoughts
+> 2.	I fear I will act immorally
+> 3.	I feel urges to confess sins over and over again
+> 5.	Feeling guilty interferes with my ability to enjoy things I would like to enjoy
+> 6.	Immoral thoughts come into my head and I cannot get rid of them
+> 8.	I must try hard to avoid having certain immoral thoughts
+> 9.	I am very worried that things I did may have been dishonest
+> 11.	I am afraid of having sexual thoughts
+> 12.	I feel guilty about immoral thoughts I have had
+> 14.	I am afraid of having immoral thoughts
+>
+> Fear of God:
+> 4.	I worry about heaven and hell
+> 7. 	I am afraid my behaviour is unacceptable to God
+> 10.	I am afraid I will disobey God’s rules/laws
+> 13.	I worry that God is upset with me
+> 15.	I am afraid my thoughts are unacceptable to God
+
+-   Religious Social Distance Questionnaire:
+
+    -   This is a slightly adapted form of the Social Distance Scale developed by @mather2017, which is a revised method of measuring social distance. Our version of the scale is intended to assess religious in-group and out-group attitudes. @mather2017 designed the measure to provide better sensitivity—particularly at the tails of the distributions—than the Bogardus Social Distance Scale [@bogardus1933], a long-standing method of measuring in-group and out-group attitudes in the social psychology literature. Others have used similar methods, adapting the original Social Distance Scale to measure social distance for religious groups in North American samples [@brinkerhoff1986]. The items are displayed in the image below.
+
+    -   This measure was administered 9 times to each participant, with blanks (i.e., “\[group member\]”) containing a different religious group member for each administration. Religious group members will either be (1) members of a broad religious group or (2) members of a sect of Christianity. The groups are as follows:
+
+        -   Broad Religious Groups (group member terminology for insertion into scale):
+
+            -   Atheism (an atheist)
+
+            -   Christianity (a Christian)
+
+            -   Sikhism (a Sikh)
+
+            -   Islam (a Muslim)
+
+            -   Buddhism (a Buddhist)
+
+            -   Hinduism (a Hindu)
+
+            -   Judaism (a Jewish person)
+
+        -   Christian Sects (group member terminology for insertion into scale):
+
+            -   Protestantism (a Protestant)
+
+            -   Catholicism (a Catholic)
+
+    -   Instructions read: “Select the option that best describes your response to the statements below.” The order of the presentation of the different religious groups (and atheism) were randomized.
+
+    -   The scale is scored by multiplying the Likert response value with the rank of the item. That is, each item is assigned a rank (1-7, in the order you see them below) representing the severity of social distance implied by the response to the item. Thus, being unwilling to accept a group member as a close relative by marriage is considered a less strong indicator of social distance than being unwilling to accept that group member in one's country whatsoever. Once this rescaling by the rank of the item is done, the items are summed to produce a total score for the group in question.
+
+    -   The variables in the data frame are denoted by `SD_religiousgroup`, where "religiousgroup" has the name of the group (e.g., `SD_protestant`).
+
+![](images/clipboard-370321347.png)

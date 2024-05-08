@@ -10,7 +10,8 @@ pkg <- c("tidyverse")
 library(groundhog)
 
 # Reading in the packages with the groundhog package for reproducibility
-groundhog.library(pkg = pkg, date = "2024-04-22")
+  # Message suppressed in order to allow for rendering of document
+suppressMessages(groundhog.library(pkg = pkg, date = "2024-04-22"))
 
 # Reading in the unclean data as data.unclean
 data.unclean <- read.csv(file = "./data/validation_data_ready.csv")
@@ -109,10 +110,10 @@ data.unclean <- data.unclean %>%
 data.unclean <- data.unclean %>%
   mutate(across(starts_with("MD"), clean_disgust_items))
 
-# Calculate item values for IOGS and DOGS
+# Calculate item values for IIGE and DOGS
   # Convert character values to the correct numeric values
 data.unclean <- data.unclean %>%
-  mutate(across(starts_with("IOGS"), ~case_when(
+  mutate(across(starts_with("IIGE"), ~case_when(
     . == "very unlikely" ~ 1,
     . == "unlikely" ~ 2,
     . == "slightly unlikely" ~ 3,
@@ -174,8 +175,8 @@ data.unclean <- data.unclean %>%
   rowwise() %>%
   mutate(
     RBI.DOGS = mean(c_across(DOGS.1:DOGS.6), na.rm = FALSE),  # Mean for DOGS variables
-    RBI.IOGS = mean(c_across(IOGS.1:IOGS.7), na.rm = FALSE),  # Mean for IOGS variables
-    RBI.F = mean(c_across(c(DOGS.1:DOGS.6, IOGS.1:IOGS.7)), na.rm = FALSE)  # Mean for all DOGS and IOGS variables
+    RBI.IIGE = mean(c_across(IIGE.1:IIGE.7), na.rm = FALSE),  # Mean for IIGE variables
+    RBI.F = mean(c_across(c(DOGS.1:DOGS.6, IIGE.1:IIGE.7)), na.rm = FALSE)  # Mean for all DOGS and IOGS variables
   ) %>%
   ungroup()
 
