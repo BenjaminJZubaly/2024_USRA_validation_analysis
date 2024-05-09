@@ -223,7 +223,7 @@ The clean data is now a data frame object in the environment called `data`.
 
     -   The scale is scored by multiplying the Likert response value with the rank of the item. That is, each item is assigned a rank (1-7, in the order you see them below) representing the severity of social distance implied by the response to the item. Thus, being unwilling to accept a group member as a close relative by marriage is considered a less strong indicator of social distance than being unwilling to accept that group member in one's country whatsoever. Once this rescaling by the rank of the item is done, the items are summed to produce a total score for the group in question.
 
-    -   The variables in the data frame are denoted by `SD_religiousgroup`, where "religiousgroup" has the name of the group (e.g., `SD_protestant`).
+    -   The variables in the data frame are denoted by `SD_religiousgroup`, where "religiousgroup" has the name of the group (e.g., `SD_protestant`). The aggregated variable of social distance towards all religious groups except Christian groups and atheists is called `SD_non_christian`, and this was calculated by taking the average total score for each of these groups.
 
 ![](images/clipboard-370321347.png)
 
@@ -233,7 +233,7 @@ Before moving on to the analysis, we will load the necessary packages.
 
 ```{r, label-Install Packages}
 # Defining the list of packages to install in a vector
-pkg <- c("psych")
+pkg <- c("psych", "lmtest")
 
 # Loading the packages using groundhog
 suppressMessages(groundhog.library(pkg, date = "2024-04-22")) # Suppress message to allow for rendering of document
@@ -652,4 +652,81 @@ The relationships here provide partial support for the validity of the RBI subsc
 
 As an additional note, the relationships are stronger between the RBI subscales and the FOS subscale of the PIOS, and the relationship between the DOGS and the FOS subscale is very small and not statistically reliable. It is not clear to me why these relationships should be stronger for fear of sin.
 
-2.  In-group and out-group attitudes aspects of the
+2.  In-group and out-group attitudes aspects of the RBI subscales
+
+We can also make predictions about how the RBI subscales should relate to measures of in-group and out-group attitudes towards religious groups, as measured by our social distance questionnaire. Higher social distance is intended to indicate more negative (less positive) attitudes towards the target group. Lower social distance is intended to indicate more positive (less negative) attitudes towards the target group. The predictions are as follows.
+
+-   For the IIGE:
+    1.  The IIGE should correlate *negatively* with the measured social distance of our participants' religious in-group (i.e., `SD_christian`).
+    2.  The IIGE should correlate *positively* with the measured social distance of our participants' religious out-groups (i.e., `SD_non_christian` and `SD_athiest`).
+-   For the DOGS:
+    1.  The DOGS should correlate *negatively* with the measured social distance of our participants' religious in-group (i.e., `SD_christian`), but this relationship should not be as strong as for the IIGE.
+    2.  The DOGS should also correlate *negatively* with the measured social distance of our participants' religious out-groups (i.e., `SD_non_christian` and `SD_athiest`).
+
+I should note that we originally measured social distance towards Christian sects, and this was intended to enable use to measure the relationship between the RBI subscales and these target sects within the sects of our sample. However, I do not believe that we have enough participants to allow for reliable sub-group analyses, because we only have data on social distance for the last round of data collection on SONA. Therefore, I will skip this.
+
+```{r}
+# Creating a data frame with only the RBI subscales and the Social Distance Scores of interest
+att.val.data <- select(data, RBI.DOGS, RBI.IIGE, SD_christian, SD_non_christian, SD_athiest)
+
+# Creating the correlation matrix
+att.val.cor <- corr.test(att.val.data)
+
+# Display the results
+print(att.val.cor)
+```
+
+-   For the IIGE:
+
+    1.  In line with our prediction, the relationship between the IIGE subscale and social distance towards Christians is negative, but this relationship is not significant (*r* = -.23, *p* = .12, *n* = 46).
+
+    2.  In contrast to our predictions, the relationship between the IIGE subscale and social distance towards non-Christian religious groups is negative (*r* = -.14, *p* = .35, *n* = 46), and the relationship between the IIGE subscale and social distance towards athiests is also negative (*r* = -.17, *p* = .26, *n* = 46). Neither of these relationships are significant, however.
+
+-   For the DOGS:
+
+    1.  In line with our predictions, the relationship between the DOGS subscale and social distance towards Christians is negative (*r* = -.19, *p* = .19, *n* = 47) and not as strong as for the IIGE subscale. However, this relationship is not significant.
+
+    2.  In line with our predictions, the relationship between the DOGS subscale and social distance towards non-Christian religious groups is negative (*r* = -.14, *p* = .35, *n* = 48) and the relationship between the DOGS subscale and social distance towards athiests is also negative (*r* = -.09, *p* = .53, *n* = 48). Neither of these relationships are significant, however.
+
+This analysis does not provide evidence for the validity of the in-group and out-group attitudes aspects of the RBI subscales. Although there is low power to be able to detect small effects, none of the relationships that we predicted are supported with significant correlations.
+
+In sum, this analysis provides very little evidence that the RBI subscales are measuring what we intend them to measure.
+
+## Testing Hypotheses
+
+Although we do not have strong evidence for validity of the RBI subscales, I will still test our hypotheses with these measures and interpret the results cautiously.
+
+The hypotheses are as follows:
+
+> Hypothesis 1: Religious individuals scoring higher in pathogen disgust sensitivity will report being more likely to engage in religious behaviors that increase in-group embeddedness.
+>
+> Hypothesis 2: Religious individuals scoring higher in pathogen disgust sensitivity will report being less likely to engage in religious behaviors that decrease out-group separation.
+
+### Hypothesis 1
+
+To test Hypothesis 1, we will conduct a simple linear regression with pathogen disgust (`PD`) predicting religious behavioral intention to increase in-group embeddedness (`RBI.IIGE`).
+
+**Assumptions:**
+
+1.  Dependent variable interval-ratio: Satisfied
+2.  Relationship between the variables is linear: Satisfied via scatterplot below—the relationship does not appear to be non-linear.
+
+```{r}
+# Creating a scatterplot between PD and RBI.IIGE
+ggplot(data, aes(x = RBI.IIGE, y = PD)) + 
+  geom_point(color = "black", size = 2) +
+  ggtitle("Scatterplot of RBI-IIE vs. Pathogen Disgust") +
+  xlab("RBI-IIE") + 
+  ylab("Pathogen Disgust") +
+  theme_minimal()
+```
+
+3.  Independence of Residuals: Satisfied via the Durban-Watson test below.
+
+```{r}
+# Fitting the linear model
+hyp_1_model <- lm(data = data, RBI.IIGE ~ PD)
+
+# Running the Durban-Watson test below
+dwtest(hyp_1_model)
+```

@@ -217,7 +217,13 @@ data.unclean <- data.unclean %>%
     SD_catholic = sum(c_across(starts_with("rs_catholic")), na.rm = FALSE)
   ) %>%
   ungroup()
-
+  # Compute the mean of the scores for non-Christian religious groups
+data.unclean <- data.unclean %>%
+  rowwise() %>%
+  mutate(
+    SD_non_christian = mean(c(SD_sikh, SD_muslim, SD_buddhist, SD_hindu, SD_jewish), na.rm = FALSE)
+  ) %>%
+  ungroup()
 
 # Returning the Clean Data ------------------------------------------------
 
