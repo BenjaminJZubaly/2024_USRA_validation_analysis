@@ -930,3 +930,15 @@ summary(FOS_model)
 -   Pathogen disgust is a significant predictor in each of the models. The standardized beta value is highest for the model predicting Fear of God (*b* = .31), with fear of sin having the lowest beta value (*b* = .23). The beta value for the model with PIOS as the dependent variable is .27.
 
 Given that our sample is selective of already religious individuals, we might expect that the relationship between disgust and religiosity is higher for the general population.
+
+# Brief Discussion
+
+When we originally did this analysis for class, we concluded that we have partial support for hypotheses. Give our problems with validation of the RBI subscales, I do not believe that we have provided evidence for the hypotheses here.
+
+Although after removing a few items we ended up with scales with respectable internal consistency, there is not strong evidence of validity of the subscales either by correlations with the PIOS—which were quite small—or by correlations with in-group and out-group attitudes towards other religious groups—which were the wrong direction, very small, and not statistically reliable, although the small sample for this analysis did not provide us with much of a fighting chance. Aside from validity problems, the IIGE showed problems with range restriction, which would prevent it from capturing the construct we are interested in anyways. There were many responses with only the highest response option, causing an accumulation of scores at the top end of the final scale.
+
+Given these problems with the measures, the estimation of the relationship between parasite disgust and the RBI subscales is difficult to interpret. However, even if we assumed strong psychometric properties the relationships that we found were either small (for the IIGE) or null (for the DOGS). This does not provide support for our hypotheses.
+
+Given this analysis, it seems wise to abandon the RBI measures that we designed. It will be easier to measure religiosity in a more general sample anyways, because we can use measures of religious affiliation as a dichotomous measure to predict, among other measures that work better for a non-selective sample. Collecting a more general sample will also allow us to generalize our conclusions more widely than here.
+
+Lastly, our estimation of the relationship between disgust and religiosity suffers from the fact that the sample here is selected on the basis of religiosity, but to get a sense of how disgust sensitivity relates to the degree of religiosity the PIOS serves this purpose well enough. As a measure of scrupulosity originally for clinical contexts with OCD patients, it can provide us with a sense of the relationship between disgust and obsessive religiosity. The moderate relationships here suggest that the relationship between disgust and religiosity may be moderate or slightly large in more general samples, given that there will be more variability in religiosity in the general sample.
