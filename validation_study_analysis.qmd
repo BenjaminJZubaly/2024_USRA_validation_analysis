@@ -233,7 +233,7 @@ Before moving on to the analysis, we will load the necessary packages.
 
 ```{r, label-Install Packages}
 # Defining the list of packages to install in a vector
-pkg <- c("psych", "lmtest")
+pkg <- c("psych", "lmtest", "sandwich")
 
 # Loading the packages using groundhog
 suppressMessages(groundhog.library(pkg, date = "2024-04-22")) # Suppress message to allow for rendering of document
@@ -704,7 +704,15 @@ The hypotheses are as follows:
 
 ### Hypothesis 1
 
-To test Hypothesis 1, we will conduct a simple linear regression with pathogen disgust (`PD`) predicting religious behavioral intention to increase in-group embeddedness (`RBI.IIGE`).
+To test Hypothesis 1, we will conduct a simple linear regression with pathogen disgust (`PD`) predicting religious behavioral intention to increase in-group embeddedness (`RBI.IIGE`). We should find a positive relationship between them.
+
+First, we will standardize both variables to allow for easier interpretation of the effect size.
+
+```{r}
+# Standardizing the variables
+z_IIGE <- scale(data$RBI.IIGE)
+z_PD <- scale(data$PD)
+```
 
 **Assumptions:**
 
@@ -721,12 +729,115 @@ ggplot(data, aes(x = RBI.IIGE, y = PD)) +
   theme_minimal()
 ```
 
-3.  Independence of Residuals: Satisfied via the Durban-Watson test below.
+3.  Independence of Residuals: Violated via the Durban-Watson test below.
 
 ```{r}
 # Fitting the linear model
-hyp_1_model <- lm(data = data, RBI.IIGE ~ PD)
+hyp_1_model <- lm(data = data, z_IIGE ~ z_PD)
 
 # Running the Durban-Watson test below
 dwtest(hyp_1_model)
 ```
+
+-   The Durban-Watson test indicates that the autocorrelation for the model is significantly greater than zero (*DW* = 1.66, *p* = .026), indicating that the independence of residuals assumption is violated. However, the statistic is not extremely different from 2 in absolute terms. Because of this, we will test the model using with robust standard errors.
+
+4.  Equality of Variance: Violated via the plot of residual vs. fitted values and the Breusch-Pagan test below.
+
+```{r}
+# Plotting residual vs. fitted values
+plot(hyp_1_model)
+
+# Breusch-Pagan test
+bptest(hyp_1_model)
+```
+
+-   The assumption of equality of variance is also violated here due to a significant result for the Breusch-Pagan test (*BP*(1) = 9.94, *p* \< .01). This should be taken care of by estimating robust standard errors.
+
+5.  Residuals Normally Distributed: Violated by the Q-Q plot of residuals above.
+
+-   The residuals deviate from normality at the end of the distribution, which I suspect is due to the presence of many responses on the IIGE that are at the top end of the scale (see the histogram in [Reliability]). Because we have so many observations of these variables, this should not be a huge problem, but we still must be careful interpreting the results of hypothesis testing.
+
+**Testing the Model:**
+
+To test the model, I will use robust standard errors from the `sandwich` package.
+
+```{r}
+# Summarizing the model
+summary(hyp_1_model)
+
+# Testing the model with robust standard errors
+coeftest(hyp_1_model, vcov = vcovHC(hyp_1_model, type = "HC1"))
+```
+
+-   The significance test of the predictor with robust standard errors is significant (*b* = .192, *t*(129) = 1.98, *p* = .0496), indicating that one standard deviation increase in pathogen disgust is associated with a .19 standard deviation increase in religious behavioral intention to increase in-group embeddedness.
+
+-   This is consistent with Hypothesis 1, although given our violations of assumptions of the regression model it may be wiser to stay agnostic.
+
+### Hypothesis 2
+
+To test Hypothesis 2, we will conduct a simple linear regression with pathogen disgust (`PD`) predicting religious behavioral intention to decrease out-group seperation (`RBI.DOGS`). We should find a negative relationship between the variables.
+
+First, we will standardize RBI.DOGS to allow for easier interpretation of the effect size.
+
+```{r}
+# Standardizing the variables
+z_DOGS <- scale(data$RBI.DOGS)
+```
+
+**Assumptions:**
+
+1.  Dependent variable interval-ratio: Satisfied
+2.  Relationship between the variables is linear: Satisfied via scatterplot below—the relationship does not appear to be non-linear.
+
+```{r}
+# Creating a scatterplot between PD and RBI.DOGS
+ggplot(data, aes(x = RBI.DOGS, y = PD)) + 
+  geom_point(color = "black", size = 2) +
+  ggtitle("Scatterplot of RBI-IIE vs. Pathogen Disgust") +
+  xlab("RBI-IIE") + 
+  ylab("Pathogen Disgust") +
+  theme_minimal()
+```
+
+3.  Independence of Residuals: Satisfied via the Durban-Watson test below.
+
+```{r}
+# Fitting the linear model
+hyp_2_model <- lm(data = data, z_DOGS ~ z_PD)
+
+# Running the Durban-Watson test below
+dwtest(hyp_2_model)
+```
+
+-   The Durban-Watson test indicates that the autocorrelation for the model is not significantly greater than zero (*DW* = 1.76, *p* = .08).
+
+4.  Equality of Variance: Satisfied via the plot of residual vs. fitted values and the Breusch-Pagan test below.
+
+```{r}
+# Plotting residual vs. fitted values
+plot(hyp_2_model)
+
+# Breusch-Pagan test
+bptest(hyp_2_model)
+```
+
+-   The assumption of equality of variance is also not violated here due to an insignificant result for the Breusch-Pagan test (*BP*(1) = .58, *p* = .45).
+
+5.  Residuals Normally Distributed: Violated by the Q-Q plot of residuals above.
+
+-   The residuals deviate from normality at the end of the distribution. However, we have enough observations that this should not be a huge problem.
+
+**Testing the Model:**
+
+To test the model, I will use robust standard errors from the `sandwich` package.
+
+```{r}
+# Summarizing the model
+summary(hyp_2_model)
+```
+
+-   The t test for the predictor is not significant (*b* = -.015, *t*(131) = -.173, *p* = .86). Overall, this does not provide strong support for Hypothesis 2.
+
+## 
+
+### 
