@@ -721,11 +721,11 @@ z_PD <- scale(data$PD)
 
 ```{r}
 # Creating a scatterplot between PD and RBI.IIGE
-ggplot(data, aes(x = RBI.IIGE, y = PD)) + 
+ggplot(data, aes(x = PD, y = RBI.IIGE)) + 
   geom_point(color = "black", size = 2) +
   ggtitle("Scatterplot of RBI-IIE vs. Pathogen Disgust") +
-  xlab("RBI-IIE") + 
-  ylab("Pathogen Disgust") +
+  xlab("Pathogen Disgust") + 
+  ylab("IIGE") +
   theme_minimal()
 ```
 
@@ -769,7 +769,7 @@ summary(hyp_1_model)
 coeftest(hyp_1_model, vcov = vcovHC(hyp_1_model, type = "HC1"))
 ```
 
--   The significance test of the predictor with robust standard errors is significant (*b* = .192, *t*(129) = 1.98, *p* = .0496), indicating that one standard deviation increase in pathogen disgust is associated with a .19 standard deviation increase in religious behavioral intention to increase in-group embeddedness.
+-   The significance test of the predictor with robust standard errors is significant (*b* = .192, *t*(129) = 1.98, *p* = .0496), indicating that one standard deviation increase in pathogen disgust is associated with a .19 standard deviation increase in religious behavioral intention to increase in-group embeddedness. It is also worth noting here that this relationship may be larger than is represented here, because we have a restricted range at the top end of the scale, as per the scatterplot above.
 
 -   This is consistent with Hypothesis 1, although given our violations of assumptions of the regression model it may be wiser to stay agnostic.
 
@@ -780,7 +780,7 @@ To test Hypothesis 2, we will conduct a simple linear regression with pathogen d
 First, we will standardize RBI.DOGS to allow for easier interpretation of the effect size.
 
 ```{r}
-# Standardizing the variables
+# Standardizing the variable
 z_DOGS <- scale(data$RBI.DOGS)
 ```
 
@@ -793,9 +793,9 @@ z_DOGS <- scale(data$RBI.DOGS)
 # Creating a scatterplot between PD and RBI.DOGS
 ggplot(data, aes(x = RBI.DOGS, y = PD)) + 
   geom_point(color = "black", size = 2) +
-  ggtitle("Scatterplot of RBI-IIE vs. Pathogen Disgust") +
-  xlab("RBI-IIE") + 
-  ylab("Pathogen Disgust") +
+  ggtitle("Scatterplot of RBI-DOGS vs. Pathogen Disgust") +
+  xlab("Pathogen Disgust") + 
+  ylab("DOGS") +
   theme_minimal()
 ```
 
@@ -838,6 +838,95 @@ summary(hyp_2_model)
 
 -   The t test for the predictor is not significant (*b* = -.015, *t*(131) = -.173, *p* = .86). Overall, this does not provide strong support for Hypothesis 2.
 
-## 
+Overall, there is not good evidence for either hypothesis here, especially considering that we have not provided good evidence of the validity of the RBI subscales.
 
-### 
+## Estimating the Relationship Between Disgust and Religiosity
+
+Since we cannot rely on the RBI subscales to give us a strong indicator of religiosity, I would like to estimate the strength of the relationship between disgust and religiosity to inform future study. This is a Christian sample, so we are dealing with a restricted range and cannot estimate the relationship between disgust and religious affiliation. However, I still believe it will be informative to look at the relationship between pathogen disgust and scores on the `PIOS` (as well as its' subacales `FOG` and `FOS`), as indicators of the degree of one's religiosity.
+
+First, we will standardize the `PIOS` variables to allow for easier interpretation of the effect size.
+
+```{r}
+# Standardizing the variables
+z_PIOS <- scale(data$PIOS)
+z_FOG <- scale(data$FOG)
+z_FOS <- scale(data$FOS)
+```
+
+**Assumptions:**
+
+1.  Dependent variables are interval-ratio: Satisfied
+2.  Relationships between the variables is linear: Satisfied via the scatterplots below—the relationships do not appear to be non-linear.
+
+```{r}
+# Creating a scatterplot between PD and the PIOS
+ggplot(data, aes(x = PD, y = PIOS)) + 
+  geom_point(color = "black", size = 2) +
+  ggtitle("Scatterplot of Pathogen Disgust and the PIOS") +
+  xlab("Pathogen Disgust") + 
+  ylab("Full PIOS") +
+  theme_minimal()
+# Creating a scatterplot between PD and FOG
+ggplot(data, aes(x = PD, y = FOG)) + 
+  geom_point(color = "black", size = 2) +
+  ggtitle("Scatterplot of Pathogen Disgust and Fear of God") +
+  xlab("Pathogen Disgust") + 
+  ylab("FOG") +
+  theme_minimal()
+# Creating a scatterplot between PD and FOS
+ggplot(data, aes(x = PD, y = FOS)) + 
+  geom_point(color = "black", size = 2) +
+  ggtitle("Scatterplot of Pathogen Disgust and Fear of Sin") +
+  xlab("Pathogen Disgust") + 
+  ylab("FOS") +
+  theme_minimal()
+```
+
+3.  Independence of Residuals: Satisfied via the Durban-Watson tests below.
+
+```{r}
+# Fitting the linear models
+PIOS_model <- lm(data = data, z_PIOS ~ z_PD)
+FOG_model <- lm(data = data, z_FOG ~ z_PD)
+FOS_model <- lm(data = data, z_FOS ~ z_PD)
+
+# Running the Durban-Watson test below
+dwtest(PIOS_model)
+dwtest(FOG_model)
+dwtest(FOS_model)
+```
+
+-   The Durban-Watson tests indicates that the autocorrelation for the models is not significantly greater than zero.
+
+4.  Equality of Variance: Satisfied via the plot of residual vs. fitted values and the Breusch-Pagan test below.
+
+```{r}
+# Plotting residual vs. fitted values
+plot(PIOS_model)
+plot(FOG_model)
+plot(FOS_model)
+
+# Breusch-Pagan test
+bptest(PIOS_model)
+bptest(FOG_model)
+bptest(FOS_model)
+```
+
+-   The assumption of equality of variance is also not violated for any of the models here, given the results of the Breusch-Pagan tests.
+
+5.  Residuals Normally Distributed: Supported by the Q-Q plots of residuals above.
+
+**Testing the Models:**
+
+To test the model, I will use robust standard errors from the `sandwich` package.
+
+```{r}
+# Summarizing the model
+summary(PIOS_model)
+summary(FOG_model)
+summary(FOS_model)
+```
+
+-   Pathogen disgust is a significant predictor in each of the models. The standardized beta value is highest for the model predicting Fear of God (*b* = .31), with fear of sin having the lowest beta value (*b* = .23). The beta value for the model with PIOS as the dependent variable is .27.
+
+Given that our sample is selective of already religious individuals, we might expect that the relationship between disgust and religiosity is higher for the general population.
